@@ -4,7 +4,7 @@
 
 ---
 
-
+<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-1.jpg" alt="System Overview Diagram" style="zoom: 33%;" />
 
 ## English <a name="english"></a>
 
@@ -26,8 +26,6 @@ The hardware integrates a current detection circuit to monitor the supply curren
 - **Camera:** Hikvision USB Camera.
 - **Display:** TJC X5 Series 7-inch IPS Touch Screen.
 
-[Back to Top](#monocular-vision-measurement-and-power-monitoring-system) | [中文 Version](#chinese)
-
 ### 2. Raspberry Pi Deployment
 
 This section outlines the steps to set up the software environment on the Raspberry Pi.
@@ -40,8 +38,8 @@ This section outlines the steps to set up the software environment on the Raspbe
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your-repository-url>
-    cd <your-repository-name>
+    git clone https://github.com/IllusionMZX/MVOM-EEContest2025-C.git
+    cd MVOM-EEContest2025-C
     ```
 
 2.  **Install Python Dependencies:**
@@ -72,64 +70,45 @@ This section outlines the steps to set up the software environment on the Raspbe
     python main.py
     ```
 
-[Back to Top](#monocular-vision-measurement-and-power-monitoring-system) | [中文 Version](#chinese)
-
 ### 3. Model Training and ONNX Export
 
-This section describes the process for training the custom models (YOLOv8n-seg, LeNet-5) and exporting them to the ONNX (Open Neural Network Exchange) format for optimized inference on the Raspberry Pi.
+This section describes the process for training the models and exporting them to ONNX format. The training scripts can be found in the `Model-Training-with-OnnxExport` directory.
 
 **Environment Setup:**
 - A PC or server with a GPU is recommended for training.
 - Python >= 3.9.
 - Install necessary libraries: `ultralytics`, `pytorch`, `onnx`, `onnxruntime`, `opencv-python`.
 
-**Training Process (Example for YOLOv8):**
+**Models:**
 
-1.  **Prepare Your Dataset:** Organize your images and labels in the format required by YOLOv8.
-2.  **Train the Model:** Use the `ultralytics` CLI or Python SDK to start the training process.
-    
-    ```python
-    from ultralytics import YOLO
-    
-    # Load a pretrained model
-    model = YOLO('yolov8n-seg.pt') 
-    
-    # Train the model
-    results = model.train(data='your_dataset.yaml', epochs=100, imgsz=640)
-    ```
-3.  **Export to ONNX:** After training, export the best-performing model (`best.pt`) to ONNX format.
-    ```python
-    from ultralytics import YOLO
-    
-    # Load the trained model
-    model = YOLO('path/to/your/best.pt')
-    
-    # Export the model to ONNX format
-    model.export(format='onnx')
-    ```
-    This will generate a `best.onnx` file, which can then be deployed to the Raspberry Pi for inference. The process for LeNet-5 is similar, involving training with PyTorch and then using `torch.onnx.export()` to convert the model.
+1.  **LeNet-5 for Numbered Squares:**
+    - **Description:** This model is trained on the **MNIST handwritten digit dataset** to recognize the numbers on the squares.
+    - **Code:** The training and export scripts are located in `Model-Training-with-OnnxExport/Digital-Squares-LeNet`.
+    - **Process:** Train the LeNet-5 model using PyTorch and then use `torch.onnx.export()` to convert the trained model to `lenet.onnx`.
 
-[Back to Top](#monocular-vision-measurement-and-power-monitoring-system) | [中文 Version](#chinese)
+2.  **YOLOv8n-seg for Overlapping Squares:**
+    - **Description:** This instance segmentation model is trained on a **custom dataset** to detect and separate overlapping squares.
+    - **Code:** The training and export scripts are in `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`.
+    - **Dataset Style:** The custom dataset consists of images with partially overlapping squares, as shown below.
+      ![Custom Dataset Sample](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.jpg)
+    - **Process:** Use the `ultralytics` library to train the YOLOv8n-seg model. After training, export the best model to `yolov8n-seg.onnx` using the `model.export(format='onnx')` command.
 
 ### 4. Current Detection Circuit Design
 
-The current detection circuit is a crucial hardware component for monitoring the system's power consumption.
+The current detection circuit is designed to monitor the system's power consumption. It is built around a high-precision current-sense amplifier, such as the **MAX4372FESA+** or a similar module.
 
 **Design Overview:**
-- A high-precision current sense amplifier (e.g., INA219 or a similar module) is used.
-- The sensor is placed in series with the 5V power supply line of the Raspberry Pi.
-- The sensor measures the voltage drop across a small shunt resistor.
-- The output of the sensor is an analog voltage signal proportional to the measured current.
-- This analog signal is fed into an ADC pin on the STM32F103C8T6 microcontroller for digital conversion.
+- The sensor is placed in series with the 5V power supply line.
+- It measures the voltage drop across a small shunt resistor and outputs an analog voltage proportional to the current.
+- This analog signal is fed into an ADC pin on the STM32F103C8T6 for digital conversion.
+
+**Schematic:**
+![Current Detection Circuit Schematic](IMG/imgae-2.jpg)
 
 **STM32 Integration:**
 - The STM32 project is developed using **STM32CubeIDE**.
-- The IDE is used for code editing, configuration (using CubeMX for pin setup), and programming (flashing) the microcontroller.
-- Within the STM32 code, the ADC is configured to continuously sample the voltage from the current sensor.
-- The sampled digital value is then converted back to a current reading based on the sensor's specifications.
-- This current value is transmitted to the Raspberry Pi, typically via a UART serial connection.
-
-[Back to Top](#monocular-vision-measurement-and-power-monitoring-system) | [中文 Version](#chinese)
+- The IDE is used for code editing, peripheral configuration (using the graphical CubeMX tool), and programming the microcontroller.
+- The STM32 firmware samples the voltage from the sensor, converts it to a current reading, and transmits the value to the Raspberry Pi via UART.
 
 ### 5. Power Consumption Measurement and Display
 
@@ -138,13 +117,9 @@ This module integrates the data from the current detection circuit to calculate 
 **Process Flow:**
 1.  **Data Acquisition (STM32):** The STM32 continuously reads the analog voltage from the current sensor via its ADC.
 2.  **Data Transmission:** The calculated current value (in Amperes) is sent from the STM32 to the Raspberry Pi over a UART serial port.
-3.  **Data Reception (Raspberry Pi):** A Python script on the Raspberry Pi listens to the serial port to receive the current data. The `pyserial` library is used for this purpose.
-4.  **Power Calculation:** The Raspberry Pi script calculates the power using the formula:
-    `Power (W) = Voltage (V) × Current (A)`
-    The voltage is a constant 5V, and the current is the value received from the STM32.
-5.  **Display:** The calculated power value, along with the primary measurement results (distance D, width w), is sent to the TJC touch screen for display. The communication protocol specific to the TJC screen is used to update the UI elements.
-
-[Back to Top](#monocular-vision-measurement-and-power-monitoring-system) | [中文 Version](#chinese)
+3.  **Data Reception (Raspberry Pi):** A Python script on the Raspberry Pi uses the `pyserial` library to listen to the serial port and receive the current data.
+4.  **Power Calculation:** The script calculates power using the formula: `Power (W) = Voltage (V) × Current (A)`, where the voltage is a constant 5V.
+5.  **Display:** The calculated power value, along with the primary measurement results, is sent to the TJC touch screen for display using its specific communication protocol.
 
 ---
 
@@ -168,8 +143,6 @@ This module integrates the data from the current detection circuit to calculate 
 - **摄像头：** 海康威视USB摄像头。
 - **显示屏：** 淘晶驰X5系列7寸IPS触摸屏。
 
-[返回顶部](#monocular-vision-measurement-and-power-monitoring-system) | [English Version](#english)
-
 ### 2. 树莓派部署
 
 本节介绍在树莓派上配置软件环境的步骤。
@@ -182,8 +155,8 @@ This module integrates the data from the current detection circuit to calculate 
 
 1.  **克隆代码仓库:**
     ```bash
-    git clone <your-repository-url>
-    cd <your-repository-name>
+    git clone https://github.com/IllusionMZX/MVOM-EEContest2025-C.git
+    cd MVOM-EEContest2025-C
     ```
 
 2.  **安装Python依赖:**
@@ -214,63 +187,45 @@ This module integrates the data from the current detection circuit to calculate 
     python main.py
     ```
 
-[返回顶部](#monocular-vision-measurement-and-power-monitoring-system) | [English Version](#english)
-
 ### 3. 模型训练及ONNX导出
 
-本节描述如何训练自定义模型（YOLOv8n-seg, LeNet-5），并将其导出为ONNX（开放神经网络交换）格式，以便在树莓派上进行优化推理。
+本节描述如何训练模型并将其导出为ONNX格式。所有训练脚本位于 `Model-Training-with-OnnxExport` 目录下。
 
 **环境配置:**
 - 推荐使用带GPU的PC或服务器进行模型训练。
 - Python >= 3.9。
 - 安装必要的库: `ultralytics`, `pytorch`, `onnx`, `onnxruntime`, `opencv-python`。
 
-**训练流程 (以YOLOv8为例):**
+**模型详情:**
 
-1.  **准备数据集:** 按照YOLOv8要求的数据集格式组织您的图片和标签文件。
-2.  **训练模型:** 使用 `ultralytics` 的命令行工具或Python SDK开始训练。
-    ```python
-    from ultralytics import YOLO
-    
-    # 加载一个预训练模型
-    model = YOLO('yolov8n-seg.pt') 
-    
-    # 训练模型
-    results = model.train(data='your_dataset.yaml', epochs=100, imgsz=640)
-    ```
-3.  **导出为ONNX:** 训练完成后，将表现最好的模型权重（通常是`best.pt`）导出为ONNX格式。
-    ```python
-    from ultralytics import YOLO
-    
-    # 加载已训练好的模型
-    model = YOLO('path/to/your/best.pt')
-    
-    # 将模型导出为ONNX格式
-    model.export(format='onnx')
-    ```
-    该操作会生成一个 `best.onnx` 文件，此文件即可拷贝到树莓派上用于推理。LeNet-5的训练与导出流程类似，通常涉及使用PyTorch进行训练，然后调用 `torch.onnx.export()` 函数完成转换。
+1.  **用于数字方块识别的LeNet-5模型:**
+    - **描述:** 该模型基于 **MNIST手写数字数据集** 进行训练，用于识别方块上的数字。
+    - **代码:** 训练和导出脚本位于 `Model-Training-with-OnnxExport/Digital-Squares-LeNet`。
+    - **流程:** 使用PyTorch训练LeNet-5模型，然后调用 `torch.onnx.export()` 函数将训练好的模型转换为 `lenet.onnx`。
 
-[返回顶部](#monocular-vision-measurement-and-power-monitoring-system) | [English Version](#english)
+2.  **用于重叠方块分割的YOLOv8n-seg模型:**
+    - **描述:** 该实例分割模型基于一个 **自定义数据集** 进行训练，用于检测并分离重叠的方块。
+    - **代码:** 训练和导出脚本位于 `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`。
+    - **数据集样式:** 自定义数据集包含部分重叠的方块图像，样式如下图所示。
+      ![自定义数据集样例](IMG/imgae-3.jpg)
+    - **流程:** 使用 `ultralytics` 库训练YOLOv8n-seg模型。训练完成后，使用 `model.export(format='onnx')` 命令将最佳模型导出为 `yolov8n-seg.onnx`。
 
 ### 4. 电流检测电路设计
 
-电流检测电路是监测系统功耗的关键硬件部分。
+电流检测电路用于监测系统的整体功耗，其核心是一个高精度电流检测放大器（例如 **MAX4372FESA+** 或功能类似的模块）。
 
 **设计概述:**
-- 采用高精度电流检测放大器（例如INA219或功能类似的模块）。
-- 传感器串联在树莓派的5V供电线路上。
-- 传感器通过测量一个微小的采样电阻上的压降来计算电流。
-- 传感器的输出是一个与被测电流成正比的模拟电压信号。
-- 此模拟信号被送入STM32F103C8T6微控制器的ADC引脚进行数字化转换。
+- 传感器串联在5V供电线路上。
+- 它通过测量一个微小采样电阻上的压降，输出一个与电流成正比的模拟电压。
+- 此模拟信号被送入STM32F103C8T6的ADC引脚进行数字化转换。
+
+**电路原理图:**
+![电流检测电路原理图](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-2.jpg)
 
 **STM32集成:**
 - STM32的工程项目使用 **STM32CubeIDE** 进行开发。
-- 该IDE用于代码编辑、引脚和外设配置（通过CubeMX图形化工具）以及程序烧录。
-- 在STM32的固件代码中，ADC被配置为连续采样来自电流传感器的电压信号。
-- 采样到的数字值根据传感器的规格被转换回电流读数。
-- 计算出的电流值通过UART串口通信发送给树莓派。
-
-[返回顶部](#monocular-vision-measurement-and-power-monitoring-system) | [English Version](#english)
+- 该IDE用于代码编辑、外设配置（通过图形化的CubeMX工具）以及程序烧录。
+- STM32固件对来自传感器的电压进行采样，将其转换为电流读数，并通过UART串口发送给树莓派。
 
 ### 5. 功耗测量与显示
 
@@ -279,10 +234,6 @@ This module integrates the data from the current detection circuit to calculate 
 **处理流程:**
 1.  **数据采集 (STM32):** STM32通过其ADC持续读取电流传感器的模拟电压。
 2.  **数据传输:** 计算出的电流值（单位：安培）通过UART串口从STM32发送到树莓派。
-3.  **数据接收 (树莓派):** 树莓派上的Python脚本监听指定的串口，以接收电流数据。此功能通过 `pyserial` 库实现。
-4.  **功耗计算:** 树莓派脚本使用以下公式计算功耗：
-    `功率 (W) = 电压 (V) × 电流 (A)`
-    其中，电压为恒定的5V，电流为从STM32接收到的值。
-5.  **数据显示:** 计算出的功耗值，连同核心的测量结果（距离D、宽度W），一同被发送到淘晶驰触摸屏上进行显示。更新UI界面时，需遵循该屏幕特定的通信协议。
-
-[返回顶部](#monocular-vision-measurement-and-power-monitoring-system) | [English Version](#english)
+3.  **数据接收 (树莓派):** 树莓派上的Python脚本使用 `pyserial` 库监听串口并接收电流数据。
+4.  **功耗计算:** 脚本使用公式 `功率 (W) = 电压 (V) × 电流 (A)` 计算功耗，其中电压为恒定的5V。
+5.  **数据显示:** 计算出的功耗值，连同核心的测量结果，被一同发送到淘晶驰触摸屏上，并遵循其特定的通信协议进行显示。
