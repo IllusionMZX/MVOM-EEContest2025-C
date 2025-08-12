@@ -84,14 +84,14 @@ This section describes the process for training the models and exporting them to
 1.  **LeNet-5 for Numbered Squares:**
     - **Description:** This model is trained on the **MNIST handwritten digit dataset** to recognize the numbers on the squares.
     - **Code:** The training and export scripts are located in `Model-Training-with-OnnxExport/Digital-Squares-LeNet`.
-    - **Process:** Train the LeNet-5 model using PyTorch and then use `torch.onnx.export()` to convert the trained model to `lenet.onnx`.
+    - **Process:** Train the LeNet-5 model using PyTorch and then use `torch.onnx.export()` to convert the trained model to `lenet5_mnist_model.onnx`.
 
 2.  **YOLOv8n-seg for Overlapping Squares:**
     - **Description:** This instance segmentation model is trained on a **custom dataset** to detect and separate overlapping squares.
     - **Code:** The training and export scripts are in `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`.
     - **Dataset Style:** The custom dataset consists of images with partially overlapping squares, as shown below.
-      ![Custom Dataset Sample](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.jpg)
-    - **Process:** Use the `ultralytics` library to train the YOLOv8n-seg model. After training, export the best model to `yolov8n-seg.onnx` using the `model.export(format='onnx')` command.
+      ![Custom Dataset Sample](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png)
+    - **Process:** Use the `ultralytics` library to train the YOLOv8n-seg model. After training, export the best model to `best.onnx` using the `model.export(format='onnx')` command.
 
 ### 4. Current Detection Circuit Design
 
@@ -103,7 +103,7 @@ The current detection circuit is designed to monitor the system's power consumpt
 - This analog signal is fed into an ADC pin on the STM32F103C8T6 for digital conversion.
 
 **Schematic:**
-![Current Detection Circuit Schematic](IMG/imgae-2.jpg)
+![Current Detection Circuit Schematic](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-2.png)
 
 **STM32 Integration:**
 - The STM32 project is developed using **STM32CubeIDE**.
@@ -201,14 +201,14 @@ This module integrates the data from the current detection circuit to calculate 
 1.  **用于数字方块识别的LeNet-5模型:**
     - **描述:** 该模型基于 **MNIST手写数字数据集** 进行训练，用于识别方块上的数字。
     - **代码:** 训练和导出脚本位于 `Model-Training-with-OnnxExport/Digital-Squares-LeNet`。
-    - **流程:** 使用PyTorch训练LeNet-5模型，然后调用 `torch.onnx.export()` 函数将训练好的模型转换为 `lenet.onnx`。
+    - **流程:** 使用PyTorch训练LeNet-5模型，然后调用 `torch.onnx.export()` 函数将训练好的模型转换为 `lenet5_mnist_model.onnx`。
 
 2.  **用于重叠方块分割的YOLOv8n-seg模型:**
     - **描述:** 该实例分割模型基于一个 **自定义数据集** 进行训练，用于检测并分离重叠的方块。
     - **代码:** 训练和导出脚本位于 `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`。
     - **数据集样式:** 自定义数据集包含部分重叠的方块图像，样式如下图所示。
-      ![自定义数据集样例](IMG/imgae-3.jpg)
-    - **流程:** 使用 `ultralytics` 库训练YOLOv8n-seg模型。训练完成后，使用 `model.export(format='onnx')` 命令将最佳模型导出为 `yolov8n-seg.onnx`。
+      ![自定义数据集样例](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png)
+    - **流程:** 使用 `ultralytics` 库训练YOLOv8n-seg模型。训练完成后，使用 `model.export(format='onnx')` 命令将最佳模型导出为 `best.onnx`。
 
 ### 4. 电流检测电路设计
 
@@ -220,7 +220,7 @@ This module integrates the data from the current detection circuit to calculate 
 - 此模拟信号被送入STM32F103C8T6的ADC引脚进行数字化转换。
 
 **电路原理图:**
-![电流检测电路原理图](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-2.jpg)
+![电流检测电路原理图](https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-2.png)
 
 **STM32集成:**
 - STM32的工程项目使用 **STM32CubeIDE** 进行开发。
