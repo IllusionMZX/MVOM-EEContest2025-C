@@ -90,7 +90,7 @@ This section describes the process for training the models and exporting them to
     - **Description:** This instance segmentation model is trained on a **custom dataset** to detect and separate overlapping squares.
     - **Code:** The training and export scripts are in `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`.
     - **Dataset Style:** The custom dataset consists of images with partially overlapping squares, as shown below.
-    <img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png" alt="Custom Dataset Sample" style="zoom: 33%;" />
+    - <img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png" alt="Custom Dataset Sample" style="zoom: 33%;" />
     - **Process:** Use the `ultralytics` library to train the YOLOv8n-seg model. After training, export the best model to `best.onnx` using the `model.export(format='onnx')` command.
 
 ### 4. Current Detection Circuit Design
@@ -207,7 +207,7 @@ This module integrates the data from the current detection circuit to calculate 
     - **描述:** 该实例分割模型基于一个 **自定义数据集** 进行训练，用于检测并分离重叠的方块。
     - **代码:** 训练和导出脚本位于 `Model-Training-with-OnnxExport/Overlapping-Squares-Yolov8n-seg`。
     - **数据集样式:** 自定义数据集包含部分重叠的方块图像，样式如下图所示。
-    <img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png" alt="Custom Dataset Sample" style="zoom: 33%;" />
+    - <img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-3.png" alt="Custom Dataset Sample" style="zoom: 33%;" />
     - **流程:** 使用 `ultralytics` 库训练YOLOv8n-seg模型。训练完成后，使用 `model.export(format='onnx')` 命令将最佳模型导出为 `best.onnx`。
 
 ### 4. 电流检测电路设计
