@@ -1,11 +1,3 @@
-<div align="center">
-<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-1.png" alt="C题题目第1页" width="800" />
-<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-2.png" alt="C题题目第2页" width="800" />
-<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-3.png" alt="C题题目第3页" width="800" />
-</div>
-
----
-
 # Monocular Vision Measurement and Power Monitoring System
 
 [English](#english) / [中文](#chinese)
@@ -13,7 +5,9 @@
 ---
 
 <div align="center">
-<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/image-1.jpg" alt="System Overview Diagram" width="800" />
+<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-1.png" alt="C题题目第1页" width="800" />
+<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-2.png" alt="C题题目第2页" width="800" />
+<img src="https://github.com/IllusionMZX/MVOM-EEContest2025-C/blob/main/IMG/pdf_page-3.png" alt="C题题目第3页" width="800" />
 </div>
 
 ## English <a name="english"></a>
